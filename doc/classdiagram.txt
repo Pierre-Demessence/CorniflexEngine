@@ -1,0 +1,22 @@
+@startuml
+class Object<typename Value> {
+      Value _value;
+
+      const T	getValue() const
+      T&	getValue()
+}
+
+class Component
+class Entity
+class Integer
+class Float
+class String
+class Map
+class Pair
+class Vector
+
+class CorniflexEngine {
+      Map
+}
+
+@enduml

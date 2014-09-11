@@ -1,0 +1,11 @@
+@startuml
+
+!include classdiagram.txt
+
+Object <|-- "toto" Component
+Object <|-- Entity
+Object <|-- Integer
+Object <|-- Float
+Object <|-- String
+
+@enduml
