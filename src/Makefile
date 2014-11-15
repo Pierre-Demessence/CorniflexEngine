@@ -6,7 +6,7 @@ CPPFLAGS +=	-Wextra -Wall -Werror
 CPPFLAGS +=	-std=c++11
 CPPFLAGS +=	-I../include/
 
-LDFLAGS +=	
+LDFLAGS +=
 LDLIBS +=
 
 SRCS	=	Component.cpp
@@ -30,7 +30,7 @@ clean:
 
 fclean:		clean
 		$(RM) $(NAME)
-		$(RM) .depend
+		$(RM) ./.depend
 
 re:		fclean all
 

@@ -3,7 +3,7 @@
 
 #include	<boost/any.hpp>
 
-#include	"Component.hh"
+#include	<corniflex/Component.hh>
 
 int		main()
 {
@@ -14,5 +14,6 @@ int		main()
   c._fields["name"] = std::string("Foo");
   
   std::cout << boost::any_cast<std::string>(c._fields["name"]) << " : (" << boost::any_cast<int>(c._fields["x"]) << ";" << boost::any_cast<int>(c._fields["y"]) << ")" << std::endl;
+
   return (0);
 }

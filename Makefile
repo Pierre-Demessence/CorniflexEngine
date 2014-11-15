@@ -1,32 +1,46 @@
-NAME	=	libCorniflex.a
+NAME	=	libcorniflex.a
 SRC	=	./src/
 BIN	=	./bin/
 TEST	=	./test/
 
+INSTALLLIB	=	/usr/lib/
+INSTALLINCLUDE	=	/usr/include/corniflex/
+
 all:		$(BIN)$(NAME)
 
 $(BIN)$(NAME):
-		make -C $(SRC)
+		make -C $(SRC) NAME=$(NAME)
 		cp $(SRC)$(NAME) $(BIN)$(NAME)
 
+install:	$(BIN)$(NAME)
+		sudo cp -r $(BIN)$(NAME) $(INSTALLLIB)
+		sudo mkdir -p $(INSTALLINCLUDE)
+		sudo cp -r ./include/* $(INSTALLINCLUDE)
+		sudo updatedb
+
+uninstall:
+		sudo rm -rf $(INSTALLLIB)$(NAME)
+		sudo rm -rf $(INSTALLINCLUDE)
+		sudo updatedb
+
 clean:
-		make clean -C $(SRC)
-		make clean -C $(TEST)
+		make clean -C $(SRC) NAME=$(NAME)
+		make clean -C $(TEST) NAME=$(NAME)
 
 fclean:
-		make fclean -C $(SRC)
-		make fclean -C $(TEST)
+		make fclean -C $(SRC) NAME=$(NAME)
+		make fclean -C $(TEST) NAME=$(NAME)
 		$(RM) $(BIN)$(NAME)
 
 re:		fclean all
 
-test:		$(BIN)$(NAME)
-		make run -C $(TEST)
+test:		install
+		make run -C $(TEST) LIB=$(NAME)
 
-debug:		$(BIN)$(NAME)
-		make debug -C $(TEST)
+debug:		install
+		make debug -C $(TEST) LIB=$(NAME)
 
 doc:
 		doxygen doxygen.cfg
 
-.PHONY:		all clean fclean re test debug doc
+.PHONY:		all install uninstall clean fclean re test debug doc
