@@ -1,4 +1,4 @@
 CorniflexEngine
 ===============
 
-C++ Entity Component System
+C++ Entity Component System Library
