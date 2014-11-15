@@ -12,7 +12,7 @@ LDLIBS +=
 SRCS	=	Component.cpp
 OBJS	=	$(SRCS:.cpp=.o)
 
-NAME	=	libCorniflex.a
+NAME	=	libcorniflex.a
 
 all:		$(NAME)
 

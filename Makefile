@@ -6,13 +6,13 @@ TEST	=	./test/
 INSTALLLIB	=	/usr/lib/
 INSTALLINCLUDE	=	/usr/include/corniflex/
 
-all:		$(BIN)$(NAME)
-
-$(BIN)$(NAME):
+all:
 		make -C $(SRC) NAME=$(NAME)
 		cp $(SRC)$(NAME) $(BIN)$(NAME)
 
-install:	$(BIN)$(NAME)
+false:
+
+install:	all
 		sudo cp -r $(BIN)$(NAME) $(INSTALLLIB)
 		sudo mkdir -p $(INSTALLINCLUDE)
 		sudo cp -r ./include/* $(INSTALLINCLUDE)
