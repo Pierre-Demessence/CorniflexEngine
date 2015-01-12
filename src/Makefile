@@ -9,7 +9,7 @@ CPPFLAGS +=	-I../include/
 LDFLAGS +=
 LDLIBS +=
 
-SRCS	=	Component.cpp
+SRCS	=	$(patsubst %.c,%.o,$(wildcard *.cpp))
 OBJS	=	$(SRCS:.cpp=.o)
 
 NAME	=	libcorniflex.a
