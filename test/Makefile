@@ -5,9 +5,9 @@ CPPFLAGS +=	-Wextra -Wall -Werror
 CPPFLAGS +=	-std=c++11
 CPPFLAGS +=	-I.
 
-LDFLAGS +=	-static
+LDFLAGS	+=	-static -L/usr/local/lib/ -lboost_unit_test_framework
 
-SRCS	=	main.cpp
+SRCS	=	$(patsubst %.c,%.o,$(wildcard *.cpp))
 OBJS	=	$(SRCS:.cpp=.o)
 
 BIN	=	../bin/
@@ -17,7 +17,7 @@ NAME	=	a.out
 all:		$(NAME)
 
 $(NAME):	$(OBJS)
-		$(CXX) $(OBJS) -o $(NAME) -l$(subst lib,,$(subst .a,,$(LIB)))
+		$(CXX) $(OBJS) $(LDFLAGS) -o $(NAME) -l$(subst lib,,$(subst .a,,$(LIB)))
 
 depend:		.depend
 
@@ -35,7 +35,7 @@ fclean:		clean
 re:		fclean all
 
 run:		$(NAME)
-		./$(NAME)
+		./$(NAME) --build_info=1 --log_level=message --report_level=detailed
 
 debug:		$(NAME)
 		valgrind --track-origins=yes ./$(NAME)
