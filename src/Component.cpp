@@ -1,6 +1,11 @@
-#include "Component.hh"
+#include "Component.hpp"
 
-Component::Component(const std::string &type)
+corniflex::Component::Component(const std::string &type)
 {
   this->_type = type;
+}
+
+void	corniflex::Component::set(const std::string &key, boost::any value)
+{
+  this->_fields[key] = value;
 }
