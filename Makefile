@@ -35,7 +35,7 @@ fclean:
 re:		fclean all
 
 test:		install
-		make run -C $(TEST) LIB=$(NAME)
+		make re run -C $(TEST) LIB=$(NAME)
 
 debug:		install
 		make debug -C $(TEST) LIB=$(NAME)
