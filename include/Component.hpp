@@ -4,23 +4,26 @@
 # include	<string>
 # include	<type_traits>
 
-# include	<boost/any.hpp>
+# include	<boost/variant.hpp>
 
 namespace corniflex {
+
+class		Component;
+
+typedef boost::variant<char, int, long, long long, float, double, std::string, bool, Component*> variantTypes;
 
 class		Component
 {
 private:
-std::string	_type;
-std::map<std::string, boost::any>	_fields;
+  std::string	_type;
+  std::map<std::string, variantTypes>	_fields;
 
 public:
-Component(const std::string &type);
+  Component(const std::string &type);
 
-void	set(const std::string &key, boost::any value);
-template<typename T>
+  void	set(const std::string &key, variantTypes value);
+  template<typename T>
   T	get(const std::string &key) const;
-
 };
 
 }
@@ -30,9 +33,9 @@ T	corniflex::Component::get(const std::string &key) const
 {
   try
     {
-      return (boost::any_cast<T>(this->_fields.at(key)));
+      return (boost::get<T>(this->_fields.at(key)));
     }
-  catch(boost::bad_any_cast& ex)
+  catch(boost::bad_get& ex)
     {
       return (0);
     }

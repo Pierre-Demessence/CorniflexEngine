@@ -5,7 +5,7 @@ corniflex::Component::Component(const std::string &type)
   this->_type = type;
 }
 
-void	corniflex::Component::set(const std::string &key, boost::any value)
+void	corniflex::Component::set(const std::string &key, variantTypes value)
 {
   this->_fields[key] = value;
 }
