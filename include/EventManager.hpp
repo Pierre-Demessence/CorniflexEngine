@@ -1,20 +1,23 @@
 #pragma once
 
+#include <functional>
 #include <map>
 #include <mutex>
 #include <typeindex>
 #include <vector>
 
-#include <iostream>
 #include "Event.hh"
 
 namespace corniflex {
+
+//typedef void (*)(Event *) t_fptr;
+typedef std::function<void(Event *)> t_fptr;
 
 template <typename T>
 class EventManager {
 private:
   std::map<std::type_index, std::vector<std::pair<T *, void (T::*)(Event *)> > >	_eventHandlers;
-  std::vector<std::pair<Event*, void (*)(Event *)>>	_events;
+  std::vector<std::pair<Event*, t_fptr > >	_events;
   std::mutex	_mutexHandlers;
   std::mutex	_mutexEvents;
   bool		_synchronous = false;
@@ -61,7 +64,7 @@ public:
       return ;
     this->_mutexEvents.lock();
     Event *event = this->_events.back().first;
-    void (*func)(Event *) = this->_events.back().second;
+    t_fptr func = this->_events.back().second;
     this->_events.erase(this->_events.end());
     this->_mutexEvents.unlock();
     processEvent(event, func);
@@ -72,7 +75,7 @@ public:
       return ;
     this->_mutexEvents.lock();
     Event *event = this->_events.front().first;
-    void (*func)(Event *) = this->_events.front().second;
+    t_fptr func = this->_events.front().second;
     this->_events.erase(this->_events.begin());
     this->_mutexEvents.unlock();
     processEvent(event, func);
@@ -83,7 +86,7 @@ public:
   }
 
 private:
-  void		processEvent(Event *event, void (*func)(Event *)) {
+  void		processEvent(Event *event, t_fptr func) {
     unsigned int	i = 0;
     this->_mutexHandlers.lock();
     auto it = this->_eventHandlers.find(std::type_index(typeid(*event)));

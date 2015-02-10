@@ -10,18 +10,18 @@ namespace corniflex {
 
 class		Component;
 
-typedef boost::variant<char, int, long, long long, float, double, std::string, bool, Component*> variantTypes;
+typedef boost::variant<char, int, long, long long, float, double, std::string, bool, Component*> t_variantTypes;
 
 class		Component
 {
 private:
   std::string	_type;
-  std::map<std::string, variantTypes>	_fields;
+  std::map<std::string, t_variantTypes>	_fields;
 
 public:
   Component(const std::string &type);
 
-  void	set(const std::string &key, variantTypes value);
+  void	set(const std::string &key, t_variantTypes value);
   template<typename T>
   T	get(const std::string &key) const;
 };
