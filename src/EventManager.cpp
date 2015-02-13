@@ -20,12 +20,22 @@ void		corniflex::EventManager::addHandler(const Event &event, t_fptr handler)
 {
   this->_mutexHandlers.lock();
   auto it = this->_eventHandlers.find(std::type_index(typeid(event)));
-  if (it != this->_eventHandlers.end()) {
+  if (it != this->_eventHandlers.end())
     it->second.push_back(handler);
-    return ;
+  else {
+    this->_eventHandlers[typeid(event)].push_back(handler);
+    this->_mutexHandlers.unlock();
   }
-  this->_eventHandlers[typeid(event)].push_back(handler);
-  this->_mutexHandlers.unlock();
+}
+
+void		corniflex::EventManager::removeHandlers(const Event &event)
+{
+  if (!this->hasHandler(event))
+    return ;
+  auto it = this->_eventHandlers.find(std::type_index(typeid(event)));
+  if (it != this->_eventHandlers.end()) {
+    it->second.clear();
+  }
 }
 
 void		corniflex::EventManager::sendEvent(Event *event, t_fptr func) {

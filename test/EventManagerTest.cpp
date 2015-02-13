@@ -30,11 +30,14 @@ BOOST_AUTO_TEST_CASE(EventManagerTestHandlers)
 
   manager.setSynchronous(true);
   manager.addHandler(FakeEvent1(), std::bind(&FakeSystem::function, &system, std::placeholders::_1));
+  BOOST_CHECK(manager.hasHandler(FakeEvent1()));
   manager.sendEvent(new FakeEvent1());
   BOOST_CHECK(manager.getNbProcessedEvent() == 1);
   manager.addHandler(FakeEvent1(), [] (corniflex::Event *) {});
   manager.sendEvent(new FakeEvent1());
   BOOST_CHECK(manager.getNbProcessedEvent() == 3);
+  manager.addHandler(FakeEvent2(), nullptr);
+  BOOST_CHECK(manager.hasHandler(FakeEvent2()));
 }
 
 BOOST_AUTO_TEST_CASE(EventManagerTestAsynchronous)
@@ -85,5 +88,21 @@ BOOST_AUTO_TEST_CASE(EventManagerTestEventsType)
   manager.sendEvent(new FakeEvent1());
   manager.sendEvent(new FakeEvent2());
 }
-
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_CASE(EventManagerTestHandlersRemoval)
+{
+  corniflex::EventManager	manager;
+  FakeSystem			system;
+
+  manager.setSynchronous(true);
+  manager.addHandler(FakeEvent1(), std::bind(&FakeSystem::function, &system, std::placeholders::_1));
+  manager.removeHandlers(FakeEvent1());
+  manager.sendEvent(new FakeEvent1());
+  manager.addHandler(FakeEvent1(), [] (corniflex::Event *) {});
+  manager.sendEvent(new FakeEvent1());
+  BOOST_CHECK(manager.getNbProcessedEvent() == 1);
+  manager.removeHandlers(FakeEvent1());
+  manager.sendEvent(new FakeEvent1());
+  BOOST_CHECK(manager.getNbProcessedEvent() == 1);
+}
