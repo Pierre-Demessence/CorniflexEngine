@@ -32,7 +32,7 @@ public:
   // ----- ----- Public Members ----- ----- //
   bool		hasHandler(const Event &event);
   void		addHandler(const Event &event, t_fptr handler);
-  void		sendEvent(Event *event, t_fptr func);
+  void		sendEvent(Event *event, t_fptr func = nullptr);
   void		processLastEvent();
   void		processFirstEvent();
   void		setSynchronous(bool synchronous);
