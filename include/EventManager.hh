@@ -12,13 +12,12 @@
 
 namespace corniflex {
 
-typedef std::function<void(Event *)>		t_fptr;
-typedef std::function<void(corniflex::Event *)>	t_handler;
+typedef std::function<void(Event *)>	t_fptr;
 
 class EventManager {
 
 private:
-  std::map<std::type_index, std::vector<t_handler > >	_eventHandlers;
+  std::map<std::type_index, std::vector<t_fptr > >	_eventHandlers;
   std::vector<std::pair<Event*, t_fptr > >		_events;
   std::mutex	_mutexHandlers;
   std::mutex	_mutexEvents;
@@ -32,7 +31,7 @@ public:
 
   // ----- ----- Public Members ----- ----- //
   bool		hasHandler(const Event &event);
-  void		addHandler(const Event &event, t_handler handler);
+  void		addHandler(const Event &event, t_fptr handler);
   void		sendEvent(Event *event, t_fptr func);
   void		processLastEvent();
   void		processFirstEvent();

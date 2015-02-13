@@ -16,7 +16,7 @@ bool		corniflex::EventManager::hasHandler(const Event &event) {
   this->_mutexHandlers.unlock();
 }
 
-void		corniflex::EventManager::addHandler(const Event &event, t_handler handler)
+void		corniflex::EventManager::addHandler(const Event &event, t_fptr handler)
 {
   this->_mutexHandlers.lock();
   auto it = this->_eventHandlers.find(std::type_index(typeid(event)));
