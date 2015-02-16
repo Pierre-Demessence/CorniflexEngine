@@ -1,35 +1,36 @@
+#include <mutex>
 #include "EventManager.hh"
 
 // ----- ----- Getters ----- ----- //
 
 unsigned long long	corniflex::EventManager::getNbProcessedEvent() const
 {
+  std::lock_guard<std::mutex> lock(this->_mutexEvents);
   return (this->_nbProcessedEvent);
 }
 
 // ----- ----- Public Members ----- ----- //
 
-bool		corniflex::EventManager::hasHandler(const Event &event) {
-  this->_mutexHandlers.lock();
+bool		corniflex::EventManager::hasHandler(const Event &event) const {
+  std::lock_guard<std::mutex> lock(this->_mutexHandlers);
   auto it = this->_eventHandlers.find(std::type_index(typeid(event)));
   return (it != this->_eventHandlers.end());
-  this->_mutexHandlers.unlock();
 }
 
 void		corniflex::EventManager::addHandler(const Event &event, t_fptr handler)
 {
-  this->_mutexHandlers.lock();
+    std::lock_guard<std::mutex> lock(this->_mutexHandlers);
   auto it = this->_eventHandlers.find(std::type_index(typeid(event)));
   if (it != this->_eventHandlers.end())
     it->second.push_back(handler);
   else {
     this->_eventHandlers[typeid(event)].push_back(handler);
-    this->_mutexHandlers.unlock();
   }
 }
 
 void		corniflex::EventManager::removeHandlers(const Event &event)
 {
+  std::lock_guard<std::mutex> lock(this->_mutexHandlers);
   if (!this->hasHandler(event))
     return ;
   auto it = this->_eventHandlers.find(std::type_index(typeid(event)));
@@ -39,33 +40,30 @@ void		corniflex::EventManager::removeHandlers(const Event &event)
 }
 
 void		corniflex::EventManager::sendEvent(Event *event, t_fptr func) {
-  this->_mutexEvents.lock();
+  std::lock_guard<std::mutex> lock(this->_mutexEvents);
   this->_events.push_back(std::make_pair(event, func));
   if (this->_synchronous)
     this->processLastEvent();
-  this->_mutexEvents.unlock();
 }
 
 void		corniflex::EventManager::processLastEvent() {
+  std::lock_guard<std::mutex> lock(this->_mutexEvents);
   if (this->_events.size() == 0)
     return ;
-  this->_mutexEvents.lock();
   Event *event = this->_events.back().first;
   t_fptr func = this->_events.back().second;
   this->_events.erase(this->_events.end());
   processEvent(event, func);
-  this->_mutexEvents.unlock();
 }
 
 void		corniflex::EventManager::processFirstEvent() {
+  std::lock_guard<std::mutex> lock(this->_mutexEvents);
   if (this->_events.size() == 0)
     return ;
-  this->_mutexEvents.lock();
   Event *event = this->_events.front().first;
   t_fptr func = this->_events.front().second;
   this->_events.erase(this->_events.begin());
   processEvent(event, func);
-  this->_mutexEvents.unlock();
 }
 
 void		corniflex::EventManager::setSynchronous(bool synchronous) {
