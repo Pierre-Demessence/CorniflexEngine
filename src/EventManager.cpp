@@ -5,6 +5,7 @@
 
 unsigned long long	corniflex::EventManager::getNbProcessedEvent() const
 {
+  std::lock_guard<std::mutex> lock(this->_mutexEvents);
   return (this->_nbProcessedEvent);
 }
 
