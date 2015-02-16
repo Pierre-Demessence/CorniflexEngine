@@ -1,0 +1,69 @@
+#!/bin/sh
+
+PROGNAME=${0##*/}
+
+parameters() {
+    if [ "$#" -le 0 ]; then
+	usage
+	exit
+    fi
+    while [ "$1" != "" ]; do
+	case $1 in
+            -h | --help )
+                help
+		exit
+                ;;
+	    -i | --init )
+                shift
+		if [ "$#" -le 0 ]; then
+		    echo "$PROGNAME: Missing parameter: name"
+		    usage
+		    exit
+		fi
+		init $1
+		exit
+                ;;
+            * )
+		echo "$PROGNAME: Unknown option: $1"
+                usage
+		exit
+		;;
+	esac
+	shift
+    done
+}
+
+init() {
+    mkdir $1
+    cd $1
+    mkdir component
+    mkdir system
+    mkdir event
+    mkdir include
+    mkdir src
+    mkdir bin
+    touch Makefile
+    touch corniflex.json
+    echo "Project $1 initialized."
+}
+
+usage() {
+    echo "Usage: ${PROGNAME} [-h|--help ]"
+}
+
+help() {
+    cat <<- _EOF_
+  ${PROGNAME}
+  CorniflexEngine script utility.
+
+  $(usage)
+
+  Options:
+  -h, --help		Display this help message and exit.
+  -i, --init name	Init a project folder
+
+_EOF_
+}
+
+parameters $@
+clean

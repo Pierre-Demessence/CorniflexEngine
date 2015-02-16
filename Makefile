@@ -1,44 +1,46 @@
-CC	=	g++
+NAME	=	libcorniflex.a
+SRC	=	./src/
+BIN	=	./bin/
+TEST	=	./test/
 
-RM	=	rm -f
+INSTALLLIB	=	/usr/lib/
+INSTALLINCLUDE	=	/usr/include/corniflex/
 
-CXXFLAGS	+=	-Wextra -Wall
-CXXFLAGS	+=	-Werror
-CXXFLAGS	+=	-std=c++11
-CXXFLAGS	+=	-ggdb3 -O0
-CXXFLAGS	+=	$(INCLUDE)
+all:
+		make -C $(SRC) NAME=$(NAME)
+		cp $(SRC)$(NAME) $(BIN)$(NAME)
 
-INCLUDE =
+false:
 
-LIBDIR	=
-LIB	=
+install:	all
+		sudo cp -r $(BIN)$(NAME) $(INSTALLLIB)
+		sudo mkdir -p $(INSTALLINCLUDE)
+		sudo cp -r ./include/* $(INSTALLINCLUDE)
+		sudo updatedb
 
-LDFLAGS	+=	$(LIBDIR) $(LIB)
-
-NAME	=	CorniflexEngine.out
-
-SRCS	=	main.cpp \
-		SettingsManager.cpp
-
-OBJS	=	$(SRCS:.cpp=.o)
-
-all:		$(NAME)
-
-$(NAME):	$(OBJS)
-		$(CC) $(OBJS) -o $(NAME) $(LDFLAGS)
+uninstall:
+		sudo rm -rf $(INSTALLLIB)$(NAME)
+		sudo rm -rf $(INSTALLINCLUDE)
+		sudo updatedb
 
 clean:
-		$(RM) $(OBJS)
+		make clean -C $(SRC) NAME=$(NAME)
+		make clean -C $(TEST) NAME=$(NAME)
 
-fclean:		clean
-		$(RM) $(NAME)
+fclean:
+		make fclean -C $(SRC) NAME=$(NAME)
+		make fclean -C $(TEST) NAME=$(NAME)
+		$(RM) $(BIN)$(NAME)
 
 re:		fclean all
 
-run:		$(NAME)
-		./$(NAME) $(PARAMS)
+test:		install
+		make re run -C $(TEST) LIB=$(NAME)
 
-debug:		$(NAME)
-		valgrind --track-origins=yes $(OPTIONS) ./$(NAME) $(PARAMS)
+debug:		install
+		make debug -C $(TEST) LIB=$(NAME)
 
-.PHONY:		all clean fclean re run debug
+doc:
+		doxygen doxygen.cfg
+
+.PHONY:		all install uninstall clean fclean re test debug doc
