@@ -17,7 +17,6 @@ install:	all
 		sudo mkdir -p $(INSTALLINCLUDE)
 		sudo cp -r ./include/* $(INSTALLINCLUDE)
 		sudo updatedb
-		make doc
 
 uninstall:
 		sudo rm -rf $(INSTALLLIB)$(NAME)

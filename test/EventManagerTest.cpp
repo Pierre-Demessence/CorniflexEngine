@@ -29,11 +29,11 @@ BOOST_AUTO_TEST_CASE(EventManagerTestHandlers)
   FakeSystem			system;
 
   manager.setSynchronous(true);
-  manager.addHandler(FakeEvent1(), std::bind(&FakeSystem::function, &system, std::placeholders::_1));
+  manager.addHandler(FakeEvent1(), manager.makeHandler(std::bind(&FakeSystem::function, &system, std::placeholders::_1)));
   BOOST_CHECK(manager.hasHandler(FakeEvent1()));
   manager.sendEvent(new FakeEvent1());
   BOOST_CHECK(manager.getNbProcessedEvent() == 1);
-  manager.addHandler(FakeEvent1(), [] (corniflex::Event *) {});
+  manager.addHandler(FakeEvent1(), corniflex::EventManager::makeHandler([] (corniflex::Event *) {}));
   manager.sendEvent(new FakeEvent1());
   BOOST_CHECK(manager.getNbProcessedEvent() == 3);
   manager.addHandler(FakeEvent2(), nullptr);
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(EventManagerTestAsynchronous)
   manager.setSynchronous(false);
   manager.sendEvent(new FakeEvent1());
   BOOST_CHECK(manager.getNbProcessedEvent() == 0);
-  manager.addHandler(FakeEvent1(), [] (corniflex::Event *) {});
+  manager.addHandler(FakeEvent1(), manager.makeHandler([] (corniflex::Event *) {}));
   manager.sendEvent(new FakeEvent1());
   BOOST_CHECK(manager.getNbProcessedEvent() == 0);
   manager.processLastEvent();
@@ -65,8 +65,8 @@ BOOST_AUTO_TEST_CASE(EventManagerTestCallback)
   manager.sendEvent(new FakeEvent1(), [] (corniflex::Event *) {
     BOOST_FAIL("Should not call calback");
   });
-  manager.addHandler(FakeEvent1(), [] (corniflex::Event *) {
-  });
+  manager.addHandler(FakeEvent1(), manager.makeHandler([] (corniflex::Event *) {
+  }));
   manager.sendEvent(new FakeEvent1(), [&b] (corniflex::Event *) {
     b = true;
   });
@@ -78,17 +78,34 @@ BOOST_AUTO_TEST_CASE(EventManagerTestEventsType)
   corniflex::EventManager	manager;
 
   manager.setSynchronous(true);
-  manager.addHandler(FakeEvent1(), [] (corniflex::Event *e) {
+  manager.addHandler(FakeEvent1(), manager.makeHandler([] (corniflex::Event *e) {
     BOOST_CHECK(dynamic_cast<FakeEvent1 *>(e) != NULL);
-  });
-  manager.addHandler(FakeEvent2(), [] (corniflex::Event *e) {
+  }));
+  manager.addHandler(FakeEvent2(), manager.makeHandler([] (corniflex::Event *e) {
     BOOST_CHECK(dynamic_cast<FakeEvent1 *>(e) == NULL);
-  });
+  }));
 
   manager.sendEvent(new FakeEvent1());
   manager.sendEvent(new FakeEvent2());
 }
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_CASE(EventManagerTestHandlersClear)
+{
+  corniflex::EventManager	manager;
+  FakeSystem			system;
+
+  manager.setSynchronous(true);
+  manager.addHandler(FakeEvent1(), manager.makeHandler(std::bind(&FakeSystem::function, &system, std::placeholders::_1)));
+  manager.clearHandlers(FakeEvent1());
+  manager.sendEvent(new FakeEvent1());
+  manager.addHandler(FakeEvent1(), manager.makeHandler([] (corniflex::Event *) {}));
+  manager.sendEvent(new FakeEvent1());
+  BOOST_CHECK(manager.getNbProcessedEvent() == 1);
+  manager.clearHandlers(FakeEvent1());
+  manager.sendEvent(new FakeEvent1());
+  BOOST_CHECK(manager.getNbProcessedEvent() == 1);
+}
 
 BOOST_AUTO_TEST_CASE(EventManagerTestHandlersRemoval)
 {
@@ -96,13 +113,12 @@ BOOST_AUTO_TEST_CASE(EventManagerTestHandlersRemoval)
   FakeSystem			system;
 
   manager.setSynchronous(true);
-  manager.addHandler(FakeEvent1(), std::bind(&FakeSystem::function, &system, std::placeholders::_1));
-  manager.removeHandlers(FakeEvent1());
+  auto handler = manager.makeHandler(std::bind(&FakeSystem::function, &system, std::placeholders::_1));
+  manager.addHandler(FakeEvent1(), handler);
+  manager.addHandler(FakeEvent1(), manager.makeHandler([] (corniflex::Event *) {}));
   manager.sendEvent(new FakeEvent1());
-  manager.addHandler(FakeEvent1(), [] (corniflex::Event *) {});
+  BOOST_CHECK(manager.getNbProcessedEvent() == 2);
+  manager.removeHandler(FakeEvent1(), handler);
   manager.sendEvent(new FakeEvent1());
-  BOOST_CHECK(manager.getNbProcessedEvent() == 1);
-  manager.removeHandlers(FakeEvent1());
-  manager.sendEvent(new FakeEvent1());
-  BOOST_CHECK(manager.getNbProcessedEvent() == 1);
+  BOOST_CHECK(manager.getNbProcessedEvent() == 3);
 }
