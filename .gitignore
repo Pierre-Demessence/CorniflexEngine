@@ -25,3 +25,6 @@
 
 # Doxygen Output
 doc/html/
+
+# Corniflex Engine Files
+*.conf
