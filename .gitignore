@@ -22,3 +22,6 @@
 
 # Makefile temp files
 .depend
+
+# Doxygen Output
+doc/html/

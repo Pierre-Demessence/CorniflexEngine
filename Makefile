@@ -17,6 +17,7 @@ install:	all
 		sudo mkdir -p $(INSTALLINCLUDE)
 		sudo cp -r ./include/* $(INSTALLINCLUDE)
 		sudo updatedb
+		make doc
 
 uninstall:
 		sudo rm -rf $(INSTALLLIB)$(NAME)
@@ -41,6 +42,7 @@ debug:		install
 		make debug -C $(TEST) LIB=$(NAME)
 
 doc:
+		rm -rf ./doc/html/
 		doxygen doxygen.cfg
 
 .PHONY:		all install uninstall clean fclean re test debug doc
